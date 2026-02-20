@@ -13,6 +13,7 @@ const PORT = Number(process.env.PORT ?? 4000);
 const SESSION_COOKIE = "cc_portal_session";
 const PORTAL_SESSION_SECRET = process.env.PORTAL_SESSION_SECRET ?? "dev-secret";
 const MAGIC_LINK_TTL_SECONDS = Number(process.env.MAGIC_LINK_TTL_SECONDS ?? 900);
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 const sessions = new Map<string, { patientId: string; tenantSlug: string; createdAt: number }>();
 const auditLog: Array<{ id: string; type: string; actor: string; at: string; payload: Record<string, unknown> }> = [];
@@ -52,13 +53,19 @@ app.post("/session/exchange", (req, res) => {
 
   const fallbackTenant = parsed.data.tenantSlug ?? "demo";
   const verified = verifyMagicLinkToken(parsed.data.token, PORTAL_SESSION_SECRET);
-  const payload =
-    verified ??
-    ({
-      patientId: "pat_123",
-      tenantSlug: fallbackTenant,
-      expiresAt: Date.now() + MAGIC_LINK_TTL_SECONDS * 1000,
-    } as const);
+  const devPayload =
+    !IS_PRODUCTION && parsed.data.token === "dev-token"
+      ? ({
+          patientId: "pat_123",
+          tenantSlug: fallbackTenant,
+          expiresAt: Date.now() + MAGIC_LINK_TTL_SECONDS * 1000,
+        } as const)
+      : null;
+  const payload = verified ?? devPayload;
+
+  if (!payload) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
 
   if (payload.expiresAt < Date.now()) {
     return res.status(401).json({ error: "Token expired" });
@@ -69,7 +76,7 @@ app.post("/session/exchange", (req, res) => {
   res.cookie(SESSION_COOKIE, sessionId, {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: IS_PRODUCTION,
     maxAge: MAGIC_LINK_TTL_SECONDS * 1000,
   });
 
