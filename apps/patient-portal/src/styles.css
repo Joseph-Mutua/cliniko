@@ -16,10 +16,7 @@
   --mint: #d4f0e7;
   --pink: #f6dbe5;
   --yellow: #f7e9b0;
-}
-
-* {
-  box-sizing: border-box;
+  --focus-ring: #71aeca;
 }
 
 body {
@@ -43,21 +40,6 @@ a:hover {
   text-decoration: underline;
 }
 
-.skip-link {
-  position: absolute;
-  left: 0.65rem;
-  top: -48px;
-  z-index: 60;
-  border-radius: 8px;
-  background: #2f3c45;
-  color: #fff;
-  font-weight: 800;
-  padding: 0.42rem 0.64rem;
-}
-
-.skip-link:focus-visible {
-  top: 0.7rem;
-}
 
 .app-shell {
   min-height: 100vh;
@@ -140,53 +122,6 @@ a:hover {
   color: var(--muted);
 }
 
-.cc-card {
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  background: var(--surface);
-  box-shadow: 0 6px 0 rgb(120 157 172 / 0.18);
-  overflow: hidden;
-}
-
-.cc-card-header {
-  padding: 0.95rem 0.95rem 0.56rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 0.7rem;
-}
-
-.cc-card-heading {
-  display: grid;
-  gap: 0.22rem;
-}
-
-.cc-card-kicker {
-  margin: 0;
-  color: var(--link-dark);
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
-  font-size: 0.68rem;
-  font-weight: 800;
-}
-
-.cc-card-title {
-  margin: 0;
-  color: var(--heading);
-  font-weight: 900;
-  font-size: 1.14rem;
-  letter-spacing: -0.01em;
-}
-
-.cc-card-subtitle {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.91rem;
-}
-
-.cc-card-content {
-  padding: 0.45rem 0.95rem 1rem;
-}
-
 .hero-card {
   background: #e8f1f6;
   border-color: #9ec3d2;
@@ -253,61 +188,6 @@ a:hover {
 
 .inline-link {
   font-weight: 800;
-}
-
-.cc-button {
-  border: 1px solid transparent;
-  border-radius: 9px;
-  padding: 0.54rem 0.84rem;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.cc-button:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.cc-button--primary {
-  background: var(--cta);
-  color: #fff;
-}
-
-.cc-button--primary:hover:not(:disabled) {
-  background: var(--cta-hover);
-}
-
-.cc-button--secondary {
-  background: #fff;
-  border-color: #8ab6c6;
-  color: #335465;
-}
-
-.cc-button--secondary:hover:not(:disabled) {
-  border-color: #6ea6ba;
-  background: #f2f8fb;
-}
-
-.cc-button--ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: #315163;
-}
-
-.cc-button--danger {
-  background: #c3475d;
-  color: #fff;
-}
-
-.cc-button--sm {
-  padding: 0.42rem 0.66rem;
-  font-size: 0.84rem;
-}
-
-.cc-button--lg {
-  padding: 0.7rem 1.06rem;
-  font-size: 1rem;
 }
 
 .button-link {
@@ -489,14 +369,6 @@ a:hover {
   display: grid;
   gap: 0.46rem;
   max-width: 460px;
-}
-
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #71aeca;
-  outline-offset: 2px;
 }
 
 @media (max-width: 980px) {

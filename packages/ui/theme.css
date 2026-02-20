@@ -1,0 +1,141 @@
+:root {
+  --focus-ring: #71aeca;
+  --border: #c8d3db;
+  --surface: #fff;
+  --heading: #2f3b44;
+  --muted: #647682;
+  --cta: #ef5a7a;
+  --cta-hover: #d94b69;
+  --link-dark: #008db7;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.65rem;
+  top: -48px;
+  z-index: 60;
+  border-radius: 8px;
+  background: #2f3c45;
+  color: #fff;
+  font-weight: 800;
+  padding: 0.42rem 0.64rem;
+}
+
+.skip-link:focus-visible {
+  top: 0.7rem;
+}
+
+.cc-card {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 6px 0 rgb(120 157 172 / 0.18);
+  overflow: hidden;
+}
+
+.cc-card-header {
+  padding: 0.92rem 0.92rem 0.56rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.cc-card-heading {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.cc-card-kicker {
+  margin: 0;
+  color: var(--link-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.cc-card-title {
+  margin: 0;
+  color: var(--heading);
+  font-weight: 900;
+  font-size: 1.12rem;
+}
+
+.cc-card-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cc-card-content {
+  padding: 0.44rem 0.92rem 0.98rem;
+}
+
+.cc-button {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 0.52rem 0.82rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cc-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.cc-button--primary {
+  background: var(--cta);
+  color: #fff;
+}
+
+.cc-button--primary:hover:not(:disabled) {
+  background: var(--cta-hover);
+}
+
+.cc-button--secondary {
+  background: #fff;
+  border-color: #8ab6c6;
+  color: #335465;
+}
+
+.cc-button--secondary:hover:not(:disabled) {
+  border-color: #6ea6ba;
+  background: #f2f8fb;
+}
+
+.cc-button--ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: #315163;
+}
+
+.cc-button--danger {
+  background: #c3475d;
+  color: #fff;
+}
+
+.cc-button--sm {
+  padding: 0.42rem 0.66rem;
+  font-size: 0.84rem;
+}
+
+.cc-button--lg {
+  padding: 0.7rem 1.06rem;
+  font-size: 1rem;
+}

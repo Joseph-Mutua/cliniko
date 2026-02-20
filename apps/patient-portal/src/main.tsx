@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 import { createPortalRouter } from "./router";
 import { staleTimes } from "@cliniko-companion/cache";
+import "@cliniko-companion/ui/theme.css";
 import "./styles.css";
 
 const queryClient = new QueryClient({
