@@ -7,7 +7,7 @@
   --surface-alt: #f2f7fa;
   --heading: #47384d;
   --text: #30464f;
-  --muted: #5f7882;
+  --muted: #4f6973;
   --link: #00a7d8;
   --link-dark: #008db7;
   --cta: #ef5a7a;
@@ -23,6 +23,7 @@ body {
   margin: 0;
   color: var(--text);
   font-family: "Nunito Sans", "Segoe UI", sans-serif;
+  line-height: 1.5;
   background:
     linear-gradient(165deg, rgb(176 219 226 / 0.28) 0 18%, transparent 18% 100%),
     linear-gradient(24deg, rgb(241 197 211 / 0.22) 0 16%, transparent 16% 100%),
@@ -118,6 +119,10 @@ a:hover {
   margin: 1.2rem auto 1.8rem;
 }
 
+.portal-main p {
+  max-width: 66ch;
+}
+
 .portal-footer {
   border-top: 1px solid var(--border);
   background: #eaf2f6;
@@ -129,8 +134,21 @@ a:hover {
 }
 
 .hero-card {
+  position: relative;
   background: #e8f1f6;
   border-color: #9ec3d2;
+}
+
+.hero-card::before {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  right: -28px;
+  top: -36px;
+  border-radius: 24px;
+  background: rgb(239 90 122 / 0.18);
+  transform: rotate(24deg);
 }
 
 .entry-card {
@@ -154,6 +172,20 @@ a:hover {
 
 .home-grid > .cc-card:nth-child(4) {
   background: #f4eef9;
+}
+
+.home-grid > .cc-card:nth-child(n + 2) {
+  position: relative;
+}
+
+.home-grid > .cc-card:nth-child(n + 2)::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 44%;
+  height: 6px;
+  border-bottom-right-radius: 12px;
+  background: rgb(0 167 216 / 0.45);
 }
 
 .metric-grid {

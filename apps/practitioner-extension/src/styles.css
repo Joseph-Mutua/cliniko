@@ -6,7 +6,7 @@
   --surface-alt: #f2f7fa;
   --heading: #47384d;
   --text: #30464f;
-  --muted: #5f7882;
+  --muted: #4f6973;
   --link: #00a7d8;
   --link-dark: #008db7;
   --cta: #ef5a7a;
@@ -22,6 +22,7 @@ body {
   margin: 0;
   color: var(--text);
   font-family: "Nunito Sans", "Segoe UI", sans-serif;
+  line-height: 1.5;
   background:
     linear-gradient(152deg, rgb(176 219 226 / 0.25) 0 20%, transparent 20% 100%),
     linear-gradient(38deg, rgb(241 197 211 / 0.2) 0 18%, transparent 18% 100%),
@@ -115,6 +116,10 @@ a:hover {
   margin: 1.08rem auto 1.55rem;
 }
 
+.ext-main p {
+  max-width: 68ch;
+}
+
 .timeline-grid {
   display: grid;
   grid-template-columns: 1.75fr 1fr;
@@ -122,12 +127,37 @@ a:hover {
 }
 
 .timeline-card {
+  position: relative;
   background: #e8f1f6;
   border-color: #9ec3d2;
 }
 
+.timeline-card::before {
+  content: "";
+  position: absolute;
+  right: -26px;
+  top: -42px;
+  width: 118px;
+  height: 118px;
+  border-radius: 20px;
+  background: rgb(239 90 122 / 0.16);
+  transform: rotate(20deg);
+}
+
 .action-card {
+  position: relative;
   background: #f3f8fb;
+}
+
+.action-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 46%;
+  height: 6px;
+  border-bottom-right-radius: 12px;
+  background: rgb(0 167 216 / 0.45);
 }
 
 .action-card .cc-card-content {
