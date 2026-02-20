@@ -162,16 +162,9 @@ a:hover {
   gap: 0.92rem;
 }
 
-.home-grid > .cc-card:nth-child(2) {
-  background: var(--mint);
-}
-
-.home-grid > .cc-card:nth-child(3) {
-  background: var(--pink);
-}
-
-.home-grid > .cc-card:nth-child(4) {
-  background: #f4eef9;
+.home-grid > .cc-card {
+  background: #e8f1f6;
+  border-color: #9ec3d2;
 }
 
 .home-grid > .cc-card:nth-child(n + 2) {
@@ -185,7 +178,7 @@ a:hover {
   width: 44%;
   height: 6px;
   border-bottom-right-radius: 12px;
-  background: rgb(0 167 216 / 0.45);
+  background: rgb(0 167 216 / 0.3);
 }
 
 .metric-grid {
