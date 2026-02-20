@@ -13,10 +13,82 @@ const PORT = Number(process.env.PORT ?? 4000);
 const SESSION_COOKIE = "cc_portal_session";
 const PORTAL_SESSION_SECRET = process.env.PORTAL_SESSION_SECRET ?? "dev-secret";
 const MAGIC_LINK_TTL_SECONDS = Number(process.env.MAGIC_LINK_TTL_SECONDS ?? 900);
+const CLINIKO_API_BASE_URL = process.env.CLINIKO_API_BASE_URL ?? "https://api.cliniko.com/v1";
+const CLINIKO_API_KEY = process.env.CLINIKO_API_KEY ?? "";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 const sessions = new Map<string, { patientId: string; tenantSlug: string; createdAt: number }>();
 const auditLog: Array<{ id: string; type: string; actor: string; at: string; payload: Record<string, unknown> }> = [];
+
+function queryFromRequest(query: express.Request["query"]): URLSearchParams {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        search.append(key, String(item));
+      }
+    } else if (value != null) {
+      search.set(key, String(value));
+    }
+  }
+  return search;
+}
+
+function readCollection(value: unknown, keys: string[]): Array<Record<string, unknown>> | null {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null);
+  }
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+  const payload = value as Record<string, unknown>;
+  for (const key of keys) {
+    const candidate = payload[key];
+    if (Array.isArray(candidate)) {
+      return candidate.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null);
+    }
+  }
+  return null;
+}
+
+async function tryClinikoRequest<T>(path: string, query?: URLSearchParams): Promise<T | null> {
+  if (!CLINIKO_API_KEY) {
+    return null;
+  }
+
+  const authorizationValue =
+    CLINIKO_API_KEY.startsWith("Bearer ") || CLINIKO_API_KEY.startsWith("Basic ")
+      ? CLINIKO_API_KEY
+      : `Bearer ${CLINIKO_API_KEY}`;
+  const normalizedPath = path.replace(/^\/+/, "");
+  const url = new URL(normalizedPath, CLINIKO_API_BASE_URL.endsWith("/") ? CLINIKO_API_BASE_URL : `${CLINIKO_API_BASE_URL}/`);
+  if (query) {
+    url.search = query.toString();
+  }
+
+  try {
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: authorizationValue,
+      },
+    });
+
+    if (!response.ok) {
+      logInfo("cliniko.request.failed", { path, status: response.status });
+      return null;
+    }
+
+    return (await response.json()) as T;
+  } catch (error) {
+    logInfo("cliniko.request.error", {
+      path,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return null;
+  }
+}
 
 app.use(
   cors({
@@ -113,43 +185,79 @@ function requireSession(req: express.Request, res: express.Response): { patientI
   return session;
 }
 
-app.get("/cliniko/patients/:id/summary", (req, res) => {
+app.get("/cliniko/patients/:id/summary", async (req, res) => {
   const session = requireSession(req, res);
   if (!session) {
     return;
   }
+  const patient = await tryClinikoRequest<Record<string, unknown>>(`/patients/${req.params.id}`);
+  const invoicesPayload = await tryClinikoRequest<unknown>(`/invoices`, new URLSearchParams({ patient_id: req.params.id }));
+  const invoiceItems = readCollection(invoicesPayload, ["invoices", "items", "data"]) ?? [];
+
+  const patientName =
+    (typeof patient?.["full_name"] === "string" && patient["full_name"]) ||
+    (typeof patient?.["name"] === "string" && patient["name"]) ||
+    "Taylor Morgan";
+
+  const outstandingInvoices = invoiceItems.filter((invoice) => Number(invoice["outstanding_amount"] ?? invoice["outstandingCents"] ?? 0) > 0).length;
+
   res.json({
     patientId: req.params.id,
-    patientName: "Taylor Morgan",
+    patientName,
     noShows: 1,
-    outstandingInvoices: 1,
+    outstandingInvoices,
     upcomingRecall: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
     tenantSlug: session.tenantSlug,
   });
 });
 
-app.get("/cliniko/patients/:id/timeline", (req, res) => {
+app.get("/cliniko/patients/:id/timeline", async (req, res) => {
   if (!requireSession(req, res)) {
     return;
   }
+  const appointmentsPayload = await tryClinikoRequest<unknown>(
+    `/appointments`,
+    new URLSearchParams({ patient_id: req.params.id }),
+  );
+  const appointmentItems = readCollection(appointmentsPayload, ["appointments", "items", "data"]);
+
+  const liveItems =
+    appointmentItems?.slice(0, 6).map((appointment, index) => ({
+      id: String(appointment["id"] ?? `ev_live_${index}`),
+      patientId: req.params.id,
+      type: "appointment",
+      label: `Appointment ${String(appointment["appointment_type"] ?? "event")}`,
+      occurredAt: String(appointment["starts_at"] ?? new Date().toISOString()),
+    })) ?? null;
+
   res.json({
     cursor: req.query.cursor ?? null,
-    items: [
-      {
-        id: "ev_1",
-        patientId: req.params.id,
-        type: "appointment",
-        label: "Upcoming telehealth appointment booked",
-        occurredAt: new Date().toISOString(),
-      },
-    ],
+    items:
+      liveItems ??
+      [
+        {
+          id: "ev_1",
+          patientId: req.params.id,
+          type: "appointment",
+          label: "Upcoming telehealth appointment booked",
+          occurredAt: new Date().toISOString(),
+        },
+      ],
   });
 });
 
-app.get("/cliniko/appointments", (req, res) => {
+app.get("/cliniko/appointments", async (req, res) => {
   if (!requireSession(req, res)) {
     return;
   }
+  const query = queryFromRequest(req.query);
+
+  const appointmentsPayload = await tryClinikoRequest<unknown>(`/appointments`, query);
+  const appointments = readCollection(appointmentsPayload, ["appointments", "items", "data"]);
+  if (appointments) {
+    return res.json({ filters: req.query, items: appointments });
+  }
+
   res.json({
     filters: req.query,
     items: [
@@ -163,20 +271,40 @@ app.get("/cliniko/appointments", (req, res) => {
   });
 });
 
-app.get("/cliniko/invoices", (req, res) => {
+app.get("/cliniko/invoices", async (req, res) => {
   if (!requireSession(req, res)) {
     return;
   }
+  const query = queryFromRequest(req.query);
+
+  const invoicesPayload = await tryClinikoRequest<unknown>(`/invoices`, query);
+  const invoices = readCollection(invoicesPayload, ["invoices", "items", "data"]);
+  if (invoices) {
+    return res.json({ filters: req.query, items: invoices });
+  }
+
   res.json({
     filters: req.query,
     items: [{ id: "inv_1", patientId: "pat_123", outstandingCents: 12500, status: "unpaid" }],
   });
 });
 
-app.get("/cliniko/appointments/:id/telehealth-links", (req, res) => {
+app.get("/cliniko/appointments/:id/telehealth-links", async (req, res) => {
   if (!requireSession(req, res)) {
     return;
   }
+
+  const appointment = await tryClinikoRequest<Record<string, unknown>>(`/appointments/${req.params.id}`);
+  const practitionerLink = appointment?.["telehealth_url"] ?? appointment?.["telehealth_practitioner_url"];
+  const patientLink = appointment?.["telehealth_patient_url"] ?? appointment?.["telehealth_url"];
+  if (typeof practitionerLink === "string" && typeof patientLink === "string") {
+    return res.json({
+      appointmentId: req.params.id,
+      practitionerLink,
+      patientLink,
+    });
+  }
+
   res.json({
     appointmentId: req.params.id,
     practitionerLink: `https://telehealth.example.com/practitioner/${req.params.id}`,
@@ -248,5 +376,5 @@ app.get("/audit/events", (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  logInfo("bff.started", { port: PORT });
+  logInfo("bff.started", { port: PORT, clinikoApiConfigured: Boolean(CLINIKO_API_KEY) });
 });
