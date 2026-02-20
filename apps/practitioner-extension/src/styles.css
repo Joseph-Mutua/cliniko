@@ -161,21 +161,78 @@ a:hover {
 .row {
   position: absolute;
   inset: 0 0 auto 0;
-  height: 66px;
+  height: 82px;
   border: 1px solid #bcd2dc;
   border-radius: 10px;
   background: #fff;
-  padding: 0.58rem 0.65rem;
+  padding: 0.46rem 0.62rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 0.55rem;
+  align-items: start;
 }
 
-.row p {
-  margin: 0 0 0.14rem;
+.row-main {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.row-main p {
+  margin: 0;
   font-weight: 800;
   color: var(--heading);
 }
 
-.row small {
+.row-main small {
   color: var(--muted);
+}
+
+.row-day {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #6f8690;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.row-day.spacer {
+  visibility: hidden;
+}
+
+.event-chip {
+  border-radius: 999px;
+  font-size: 0.69rem;
+  line-height: 1;
+  padding: 0.28rem 0.45rem;
+  font-weight: 800;
+  align-self: center;
+}
+
+.event-chip.type-appointment {
+  background: #d8ecf8;
+  color: #1f5e86;
+}
+
+.event-chip.type-invoice {
+  background: #fde8de;
+  color: #9d5736;
+}
+
+.event-chip.type-attachment {
+  background: #d4efe3;
+  color: #1d6b4f;
+}
+
+.event-chip.type-communication {
+  background: #ece1f7;
+  color: #64488c;
+}
+
+.event-chip.type-form {
+  background: #f8edbf;
+  color: #7c6720;
 }
 
 .action-row {

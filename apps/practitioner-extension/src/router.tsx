@@ -20,6 +20,31 @@ type PatientRouteContext = {
   patientId: string;
 };
 
+function dayBucket(value: string): string {
+  const date = new Date(value);
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+function readableDay(value: string): string {
+  return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" }).format(new Date(value));
+}
+
+function eventLabel(type: "appointment" | "invoice" | "attachment" | "communication" | "form"): string {
+  if (type === "appointment") {
+    return "Appointment";
+  }
+  if (type === "invoice") {
+    return "Invoice";
+  }
+  if (type === "attachment") {
+    return "Attachment";
+  }
+  if (type === "communication") {
+    return "Comms";
+  }
+  return "Form";
+}
+
 function ExtensionLayout() {
   const { patientId = "pat_123" } = useParams();
   const navigate = useNavigate();
@@ -126,7 +151,7 @@ function TimelinePage() {
   const rowVirtualizer = useVirtualizer({
     count: timeline.data?.length ?? 0,
     getScrollElement: () => parentRef,
-    estimateSize: () => 72,
+    estimateSize: () => 86,
     overscan: 6,
   });
 
@@ -145,10 +170,16 @@ function TimelinePage() {
               if (!item) {
                 return null;
               }
+              const previous = timeline.data?.[virtualRow.index - 1];
+              const showDay = !previous || dayBucket(previous.occurredAt) !== dayBucket(item.occurredAt);
               return (
                 <article key={item.id} className="row" style={{ transform: `translateY(${virtualRow.start}px)` }}>
-                  <p>{item.label}</p>
-                  <small>{formatDate(item.occurredAt)}</small>
+                  {showDay ? <p className="row-day">{readableDay(item.occurredAt)}</p> : <p className="row-day spacer" />}
+                  <div className="row-main">
+                    <p>{item.label}</p>
+                    <small>{formatDate(item.occurredAt)}</small>
+                  </div>
+                  <span className={`event-chip type-${item.type}`}>{eventLabel(item.type)}</span>
                 </article>
               );
             })}
