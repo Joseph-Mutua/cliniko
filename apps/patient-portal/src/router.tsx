@@ -76,6 +76,9 @@ function AppShell() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#portal-content">
+        Skip to content
+      </a>
       <header className="topbar">
         <div className="topbar-inner">
           <div className="brand-block">
@@ -96,7 +99,7 @@ function AppShell() {
             </Button>
           ) : null}
         </div>
-        <nav className="topnav">
+        <nav className="topnav" aria-label="Patient portal sections">
           <Link to={`/${tenantSlug}/home`}>Home</Link>
           <Link to={`/${tenantSlug}/appointments`}>Appointments</Link>
           <Link to={`/${tenantSlug}/forms`}>Forms</Link>
@@ -105,7 +108,7 @@ function AppShell() {
           <Link to={`/${tenantSlug}/settings`}>Settings</Link>
         </nav>
       </header>
-      <main className="portal-main">
+      <main id="portal-content" className="portal-main">
         <Outlet />
       </main>
       <footer className="portal-footer">

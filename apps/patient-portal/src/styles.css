@@ -38,6 +38,22 @@ a:hover {
   text-decoration: underline;
 }
 
+.skip-link {
+  position: absolute;
+  left: 0.7rem;
+  top: -48px;
+  z-index: 50;
+  padding: 0.46rem 0.68rem;
+  border-radius: 9px;
+  background: #122b24;
+  color: #fff;
+  font-weight: 700;
+}
+
+.skip-link:focus-visible {
+  top: 0.7rem;
+}
+
 .app-shell {
   min-height: 100vh;
   display: grid;
@@ -292,6 +308,14 @@ a:hover {
   text-decoration: none;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #88c1ae;
+  outline-offset: 2px;
+}
+
 .virtual-container {
   height: 396px;
   overflow: auto;
@@ -513,5 +537,13 @@ a:hover {
 
   .virtual-container {
     height: 320px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

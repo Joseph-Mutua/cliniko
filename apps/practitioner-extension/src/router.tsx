@@ -28,6 +28,9 @@ function ExtensionLayout() {
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen((value) => !value);
@@ -55,6 +58,9 @@ function ExtensionLayout() {
 
   return (
     <div className="ext-shell">
+      <a className="skip-link" href="#practitioner-content">
+        Skip to content
+      </a>
       <header className="ext-topbar">
         <div className="ext-topbar-inner">
           <div className="ext-brand">
@@ -65,14 +71,14 @@ function ExtensionLayout() {
             Ctrl+K
           </Button>
         </div>
-        <nav className="ext-nav">
+        <nav className="ext-nav" aria-label="Practitioner extension sections">
           <Link to={`/patients/${patientId}/timeline`}>Timeline</Link>
           <Link to={`/patients/${patientId}/actions/send-intake`}>Send intake</Link>
           <Link to={`/patients/${patientId}/actions/request-payment`}>Request payment</Link>
           <Link to={`/patients/${patientId}/actions/upload-attachment`}>Upload</Link>
         </nav>
       </header>
-      <main className="ext-main">
+      <main id="practitioner-content" className="ext-main">
         <Outlet />
       </main>
       {open ? (
