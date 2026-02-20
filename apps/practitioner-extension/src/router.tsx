@@ -14,7 +14,7 @@ import {
   patientSummaryQuery,
   timelineQuery,
 } from "./queries";
-import { useSendIntake, useSendPaymentLink, useUploadAttachment } from "./mutations";
+import { useAddNoteStub, useSendIntake, useSendPaymentLink, useUploadAttachment } from "./mutations";
 
 type PatientRouteContext = {
   patientId: string;
@@ -99,6 +99,8 @@ function TimelinePage() {
   const { patientId } = useLoaderData() as PatientRouteContext;
   const summary = useQuery(patientSummaryQuery(patientId));
   const timeline = useQuery(timelineQuery(patientId, { pageSize: 30 }));
+  const addNote = useAddNoteStub(patientId);
+  const [noteText, setNoteText] = useState("Follow-up call required");
 
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null);
   const rowVirtualizer = useVirtualizer({
@@ -138,7 +140,28 @@ function TimelinePage() {
         <p>
           <Link to={`/patients/${patientId}/actions/upload-attachment`}>Upload attachment</Link>
         </p>
-        <p>Alerts: {summary.data?.noShows ?? 0} no-show(s), {summary.data?.outstandingInvoices ?? 0} outstanding invoice(s)</p>
+        <div className="action-row">
+          <Button
+            type="button"
+            onClick={async () => {
+              if (summary.data?.nextTelehealthPatientLink) {
+                await navigator.clipboard.writeText(summary.data.nextTelehealthPatientLink);
+              }
+            }}
+          >
+            Copy telehealth link
+          </Button>
+        </div>
+        <div className="action-row">
+          <input value={noteText} onChange={(event) => setNoteText(event.target.value)} aria-label="Note stub" />
+          <Button type="button" onClick={() => addNote.mutate(noteText)} disabled={addNote.isPending}>
+            Add note stub
+          </Button>
+        </div>
+        <p>
+          Alerts: {summary.data?.noShows ?? 0} no-show(s), {summary.data?.outstandingInvoices ?? 0} outstanding
+          invoice(s), recall {summary.data?.upcomingRecall ? formatDate(summary.data.upcomingRecall) : "none"}
+        </p>
       </Card>
     </section>
   );

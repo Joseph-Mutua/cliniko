@@ -4,6 +4,8 @@ export type PatientSummary = {
   upcomingAppointments: number;
   outstandingInvoices: number;
   noShows: number;
+  upcomingRecall: string;
+  nextTelehealthPatientLink: string | null;
 };
 
 export type TimelineItem = {
@@ -129,12 +131,17 @@ export async function parseEntryParams(url: string): Promise<{ patientId: string
 
 export async function getPatientSummary(patientId: string): Promise<PatientSummary> {
   const db = readDb();
+  const nextAppointment = db.appointments
+    .filter((item) => item.patientId === patientId && new Date(item.startsAt).getTime() > Date.now())
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
   return {
     patientId,
     patientName: db.patient.name,
     upcomingAppointments: db.appointments.filter((item) => new Date(item.startsAt).getTime() > Date.now()).length,
     outstandingInvoices: db.invoices.filter((item) => item.outstandingCents > 0).length,
     noShows: 1,
+    upcomingRecall: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+    nextTelehealthPatientLink: nextAppointment ? `https://telehealth.example.com/patient/${nextAppointment.id}` : null,
   };
 }
 
@@ -181,6 +188,12 @@ export async function uploadAttachment(patientId: string, fileName: string): Pro
     name: fileName,
   });
   db.timeline.unshift(event(patientId, "attachment", `Attachment uploaded: ${fileName}`));
+  writeDb(db);
+}
+
+export async function addNoteStub(patientId: string, note: string): Promise<void> {
+  const db = readDb();
+  db.timeline.unshift(event(patientId, "communication", `Note stub added: ${note}`));
   writeDb(db);
 }
 
