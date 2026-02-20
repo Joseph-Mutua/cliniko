@@ -3,7 +3,13 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@cliniko-companion/cache": ["../../packages/cache/src/index.ts"],
+      "@cliniko-companion/forms": ["../../packages/forms/src/index.ts"],
+      "@cliniko-companion/ui": ["../../packages/ui/src/index.tsx"],
+      "@cliniko-companion/utils": ["../../packages/utils/src/index.ts"]
+    }
   },
   "include": ["src", "vite.config.ts", "playwright.config.ts"]
 }

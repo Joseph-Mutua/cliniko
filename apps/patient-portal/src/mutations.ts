@@ -1,5 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { onAttachmentUploaded, onFormSubmitted, onPaymentRequested, runInvalidations } from "@cliniko-companion/cache";
+import {
+  onAppointmentChangeRequested,
+  onAttachmentUploaded,
+  onFormSubmitted,
+  onPaymentRequested,
+  runInvalidations,
+} from "@cliniko-companion/cache";
 import { clearDraft } from "@cliniko-companion/forms";
 import { confirmUpload, createUploadSession, payInvoice, requestAppointmentChange, submitForm } from "./api";
 
@@ -46,12 +52,12 @@ export function useRequestAppointmentChange(patientId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: requestAppointmentChange,
-    onSuccess: async () => {
-      await runInvalidations(queryClient, [
-        { key: ["appointments"] },
-        { key: ["patient", patientId, "timeline"] },
-      ]);
+    mutationFn: async (appointmentId: string) => {
+      await requestAppointmentChange(appointmentId);
+      return appointmentId;
+    },
+    onSuccess: async (appointmentId) => {
+      await runInvalidations(queryClient, onAppointmentChangeRequested({ patientId, appointmentId }));
     },
   });
 }

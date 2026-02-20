@@ -31,6 +31,11 @@ type LoaderData = {
   tenantSlug: string;
 };
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
+
 async function requireSession(tenantSlug: string): Promise<{ patientId: string; tenantSlug: string }> {
   const session = await getSession();
   if (!session) {
@@ -57,6 +62,17 @@ async function homeLoader(queryClient: QueryClient, args: LoaderFunctionArgs): P
 
 function AppShell() {
   const { tenantSlug = "demo" } = useParams();
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const listener = (event: Event) => {
+      const installEvent = event as BeforeInstallPromptEvent;
+      installEvent.preventDefault();
+      setInstallPrompt(installEvent);
+    };
+    window.addEventListener("beforeinstallprompt", listener);
+    return () => window.removeEventListener("beforeinstallprompt", listener);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -70,6 +86,18 @@ function AppShell() {
           <Link to={`/${tenantSlug}/uploads`}>Uploads</Link>
           <Link to={`/${tenantSlug}/settings`}>Settings</Link>
         </nav>
+        {installPrompt ? (
+          <Button
+            type="button"
+            onClick={async () => {
+              await installPrompt.prompt();
+              await installPrompt.userChoice;
+              setInstallPrompt(null);
+            }}
+          >
+            Add to Home Screen
+          </Button>
+        ) : null}
       </header>
       <main>
         <Outlet />
