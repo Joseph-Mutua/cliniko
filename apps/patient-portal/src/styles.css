@@ -334,6 +334,81 @@ a:hover {
   color: var(--muted);
 }
 
+.status-pill {
+  margin-left: 0.45rem;
+  border-radius: 999px;
+  padding: 0.16rem 0.46rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.status-pill.is-open {
+  background: #fff2dc;
+  color: #8b6117;
+}
+
+.status-pill.is-paid {
+  background: #d9efe6;
+  color: #1e6048;
+}
+
+.detail-block {
+  display: grid;
+  gap: 0.26rem;
+  margin-bottom: 0.85rem;
+}
+
+.detail-label {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.11em;
+  color: var(--muted);
+}
+
+.line-item-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.line-item-list p {
+  margin: 0;
+  border: 1px solid #cde0d7;
+  border-radius: 11px;
+  padding: 0.54rem 0.62rem;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.profile-grid {
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.profile-grid div {
+  border: 1px solid #cde0d7;
+  border-radius: 12px;
+  padding: 0.6rem 0.65rem;
+  background: #fff;
+}
+
+.profile-grid dt {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+}
+
+.profile-grid dd {
+  margin: 0.32rem 0 0;
+  font-weight: 600;
+}
+
 .dynamic-form {
   display: grid;
   gap: 0.78rem;

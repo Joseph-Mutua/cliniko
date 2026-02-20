@@ -263,6 +263,10 @@ a:hover {
   margin-bottom: 0.2rem;
 }
 
+.action-title {
+  font-weight: 600;
+}
+
 .action-row input {
   flex: 1;
   border: 1px solid var(--border);
@@ -286,6 +290,38 @@ a:hover {
 
 .alert-line strong {
   color: var(--text);
+}
+
+.detail-stack {
+  display: grid;
+  gap: 0.32rem;
+  margin-bottom: 0.8rem;
+}
+
+.detail-stack p {
+  margin: 0;
+}
+
+.detail-links {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.line-item-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.line-item-list p {
+  margin: 0;
+  border: 1px solid #ccdde2;
+  border-radius: 10px;
+  padding: 0.52rem 0.58rem;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
 }
 
 .command-overlay {

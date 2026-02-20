@@ -187,7 +187,7 @@ function SendIntakePage() {
     <Card title="Send intake" subtitle="Choose template and send quickly" kicker="Patient outreach">
       {templates.data?.map((template) => (
         <div key={template.id} className="action-row">
-          <span>{template.title}</span>
+          <span className="action-title">{template.title}</span>
           <Button type="button" onClick={() => mutation.mutate(template.id)}>
             Send
           </Button>
@@ -206,7 +206,7 @@ function RequestPaymentPage() {
     <Card title="Request payment" subtitle="Send invoice reminder links" kicker="Billing outreach">
       {invoices.data?.map((invoice) => (
         <div key={invoice.id} className="action-row">
-          <span>
+          <span className="action-title">
             {invoice.id} ({formatMoney(invoice.outstandingCents)})
           </span>
           <Button type="button" onClick={() => mutation.mutate(invoice.id)}>
@@ -241,15 +241,23 @@ function AppointmentDrillPage() {
 
   return (
     <Card title="Appointment drill-down" subtitle="Telehealth links and notes" kicker="Appointment context">
-      <p>{formatDate(appointment.data?.startsAt ?? Date.now())}</p>
-      <p>{appointment.data?.location}</p>
-      <p>{appointment.data?.notes}</p>
-      <a href={appointment.data?.telehealthPractitionerLink} target="_blank" rel="noreferrer">
-        Practitioner telehealth link
-      </a>
-      <a href={appointment.data?.telehealthPatientLink} target="_blank" rel="noreferrer">
-        Patient telehealth link
-      </a>
+      <div className="detail-stack">
+        <p>
+          Start time: <strong>{formatDate(appointment.data?.startsAt ?? Date.now())}</strong>
+        </p>
+        <p>
+          Location: <strong>{appointment.data?.location}</strong>
+        </p>
+        <p>{appointment.data?.notes}</p>
+      </div>
+      <div className="detail-links">
+        <a href={appointment.data?.telehealthPractitionerLink} target="_blank" rel="noreferrer">
+          Practitioner telehealth link
+        </a>
+        <a href={appointment.data?.telehealthPatientLink} target="_blank" rel="noreferrer">
+          Patient telehealth link
+        </a>
+      </div>
     </Card>
   );
 }
@@ -260,13 +268,22 @@ function InvoiceDrillPage() {
 
   return (
     <Card title="Invoice drill-down" subtitle="Status and line items" kicker="Billing detail">
-      <p>Status: {invoice.data?.status}</p>
-      <p>Outstanding: {formatMoney(invoice.data?.outstandingCents ?? 0)}</p>
-      {invoice.data?.lineItems.map((item) => (
-        <p key={item.id}>
-          {item.label}: {formatMoney(item.amountCents)}
+      <div className="detail-stack">
+        <p>
+          Status: <strong>{invoice.data?.status}</strong>
         </p>
-      ))}
+        <p>
+          Outstanding: <strong>{formatMoney(invoice.data?.outstandingCents ?? 0)}</strong>
+        </p>
+      </div>
+      <div className="line-item-list">
+        {invoice.data?.lineItems.map((item) => (
+          <p key={item.id}>
+            <span>{item.label}</span>
+            <strong>{formatMoney(item.amountCents)}</strong>
+          </p>
+        ))}
+      </div>
     </Card>
   );
 }

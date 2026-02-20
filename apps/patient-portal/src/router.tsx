@@ -256,15 +256,20 @@ function AppointmentDetailPage() {
   const [fileName, setFileName] = useState("pre-visit-note.pdf");
 
   return (
-    <Card title="Appointment detail" subtitle="Preparation, telehealth, and uploads">
-      <p>{appointment.data ? formatDate(appointment.data.startsAt) : "Loading..."}</p>
-      <p>{appointment.data?.prepNotes}</p>
+    <Card title="Appointment detail" subtitle="Preparation, telehealth, and uploads" kicker="Visit context">
+      <div className="detail-block">
+        <p className="detail-label">Scheduled</p>
+        <p className="primary-line">{appointment.data ? formatDate(appointment.data.startsAt) : "Loading..."}</p>
+        <p className="detail-label">Preparation notes</p>
+        <p>{appointment.data?.prepNotes}</p>
+      </div>
       <div className="actions-row">
         <a className="button-link" href={telehealth.data?.patientLink} target="_blank" rel="noreferrer">
           Join telehealth
         </a>
         <Button
           type="button"
+          variant="secondary"
           onClick={async () => {
             if (telehealth.data?.patientLink) {
               await navigator.clipboard.writeText(telehealth.data.patientLink);
@@ -363,7 +368,7 @@ function FormFillPage() {
   }
 
   return (
-    <Card title={formDefinition.data.title} subtitle="Autosave enabled">
+    <Card title={formDefinition.data.title} subtitle="Autosave enabled" kicker="Digital form">
       <form onSubmit={form.handleSubmit((values) => submit.mutate(values))} className="dynamic-form">
         {formDefinition.data.fields.map((field) => {
           if (field.type === "textarea") {
@@ -411,7 +416,12 @@ function BillingPage() {
         <article key={invoice.id} className="list-row static">
           <div>
             <p className="primary-line">{invoice.id}</p>
-            <small>{formatMoney(invoice.outstandingCents)} outstanding</small>
+            <small>
+              {formatMoney(invoice.outstandingCents)} outstanding{" "}
+              <span className={`status-pill ${invoice.outstandingCents > 0 ? "is-open" : "is-paid"}`}>
+                {invoice.outstandingCents > 0 ? "Open" : "Paid"}
+              </span>
+            </small>
           </div>
           <div className="actions-row">
             <Link to={`../billing/${invoice.id}`}>Details</Link>
@@ -434,14 +444,23 @@ function InvoiceDetailPage() {
   const invoice = useQuery(invoiceQuery(invoiceId));
 
   return (
-    <Card title={`Invoice ${invoiceId}`} subtitle="Line items and status">
-      <p>Status: {invoice.data?.status}</p>
-      <p>Outstanding: {formatMoney(invoice.data?.outstandingCents ?? 0)}</p>
-      {invoice.data?.lineItems.map((item) => (
-        <p key={item.id}>
-          {item.label}: {formatMoney(item.amountCents)}
+    <Card title={`Invoice ${invoiceId}`} subtitle="Line items and status" kicker="Invoice detail">
+      <div className="detail-block">
+        <p>
+          Status: <strong>{invoice.data?.status}</strong>
         </p>
-      ))}
+        <p>
+          Outstanding: <strong>{formatMoney(invoice.data?.outstandingCents ?? 0)}</strong>
+        </p>
+      </div>
+      <div className="line-item-list">
+        {invoice.data?.lineItems.map((item) => (
+          <p key={item.id}>
+            <span>{item.label}</span>
+            <strong>{formatMoney(item.amountCents)}</strong>
+          </p>
+        ))}
+      </div>
     </Card>
   );
 }
@@ -453,18 +472,21 @@ function UploadsPage() {
   const upload = useUploadAttachment(patientId);
 
   return (
-    <Card title="Uploads" subtitle="Insurance docs, referrals, and progress images">
+    <Card title="Uploads" subtitle="Insurance docs, referrals, and progress images" kicker="Attachments">
       <div className="actions-row">
         <input value={name} onChange={(event) => setName(event.target.value)} />
         <Button type="button" onClick={() => upload.mutate(name)}>
           Upload file
         </Button>
       </div>
-      {data?.map((attachment) => (
-        <p key={attachment.id}>
-          {attachment.name} ({formatDate(attachment.createdAt)})
-        </p>
-      ))}
+      <div className="line-item-list">
+        {data?.map((attachment) => (
+          <p key={attachment.id}>
+            <span>{attachment.name}</span>
+            <strong>{formatDate(attachment.createdAt)}</strong>
+          </p>
+        ))}
+      </div>
     </Card>
   );
 }
@@ -474,10 +496,21 @@ function SettingsPage() {
   const profile = useQuery(profileQuery(patientId));
 
   return (
-    <Card title="Settings" subtitle="Communication preferences and profile">
-      <p>{profile.data?.name}</p>
-      <p>{profile.data?.email}</p>
-      <p>Preferred channel: {profile.data?.communication}</p>
+    <Card title="Settings" subtitle="Communication preferences and profile" kicker="Patient profile">
+      <dl className="profile-grid">
+        <div>
+          <dt>Name</dt>
+          <dd>{profile.data?.name}</dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd>{profile.data?.email}</dd>
+        </div>
+        <div>
+          <dt>Preferred channel</dt>
+          <dd>{profile.data?.communication}</dd>
+        </div>
+      </dl>
     </Card>
   );
 }
