@@ -3,6 +3,10 @@ export const qk = {
 
   patient: (patientId: string) => ["patient", patientId] as const,
   patientSummary: (patientId: string) => ["patient", patientId, "summary"] as const,
+  patientTimelineRoot: (patientId: string) => ["patient", patientId, "timeline"] as const,
+  patientFormsRoot: (patientId: string) => ["patient", patientId, "forms"] as const,
+  patientAppointmentsRoot: (patientId: string) => ["appointments", { patientId }] as const,
+  patientInvoicesRoot: (patientId: string) => ["invoices", { patientId }] as const,
 
   appointments: (filters: Record<string, unknown>) => ["appointments", filters] as const,
   appointment: (appointmentId: string) => ["appointment", appointmentId] as const,
