@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, type QueryClient } from "@tanstack/react-query";
-import { Link, Outlet, redirect, useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { Link, NavLink, Outlet, redirect, useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { createBrowserRouter, type LoaderFunctionArgs } from "react-router-dom";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Button, Card } from "@cliniko-companion/ui";
@@ -25,6 +25,7 @@ function ExtensionLayout() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const navClass = ({ isActive }: { isActive: boolean }) => (isActive ? "is-active" : "");
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -72,10 +73,18 @@ function ExtensionLayout() {
           </Button>
         </div>
         <nav className="ext-nav" aria-label="Practitioner extension sections">
-          <Link to={`/patients/${patientId}/timeline`}>Timeline</Link>
-          <Link to={`/patients/${patientId}/actions/send-intake`}>Send intake</Link>
-          <Link to={`/patients/${patientId}/actions/request-payment`}>Request payment</Link>
-          <Link to={`/patients/${patientId}/actions/upload-attachment`}>Upload</Link>
+          <NavLink to={`/patients/${patientId}/timeline`} className={navClass}>
+            Timeline
+          </NavLink>
+          <NavLink to={`/patients/${patientId}/actions/send-intake`} className={navClass}>
+            Send intake
+          </NavLink>
+          <NavLink to={`/patients/${patientId}/actions/request-payment`} className={navClass}>
+            Request payment
+          </NavLink>
+          <NavLink to={`/patients/${patientId}/actions/upload-attachment`} className={navClass}>
+            Upload
+          </NavLink>
         </nav>
       </header>
       <main id="practitioner-content" className="ext-main">

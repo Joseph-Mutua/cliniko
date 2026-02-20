@@ -107,6 +107,12 @@ a:hover {
   text-decoration: none;
 }
 
+.topnav a.is-active {
+  color: #fff;
+  background: var(--link-dark);
+  border-color: var(--link-dark);
+}
+
 .portal-main {
   width: min(1120px, 100% - 1.9rem);
   margin: 1.2rem auto 1.8rem;

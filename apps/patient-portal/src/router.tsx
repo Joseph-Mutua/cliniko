@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, type QueryClient } from "@tanstack/react-query";
-import { Link, Outlet, redirect, useLoaderData, useParams } from "react-router-dom";
+import { Link, NavLink, Outlet, redirect, useLoaderData, useParams } from "react-router-dom";
 import { createBrowserRouter, type LoaderFunctionArgs } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -63,6 +63,7 @@ async function homeLoader(queryClient: QueryClient, args: LoaderFunctionArgs): P
 function AppShell() {
   const { tenantSlug = "demo" } = useParams();
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const navClass = ({ isActive }: { isActive: boolean }) => (isActive ? "is-active" : "");
 
   useEffect(() => {
     const listener = (event: Event) => {
@@ -100,12 +101,24 @@ function AppShell() {
           ) : null}
         </div>
         <nav className="topnav" aria-label="Patient portal sections">
-          <Link to={`/${tenantSlug}/home`}>Home</Link>
-          <Link to={`/${tenantSlug}/appointments`}>Appointments</Link>
-          <Link to={`/${tenantSlug}/forms`}>Forms</Link>
-          <Link to={`/${tenantSlug}/billing`}>Billing</Link>
-          <Link to={`/${tenantSlug}/uploads`}>Uploads</Link>
-          <Link to={`/${tenantSlug}/settings`}>Settings</Link>
+          <NavLink to={`/${tenantSlug}/home`} className={navClass}>
+            Home
+          </NavLink>
+          <NavLink to={`/${tenantSlug}/appointments`} className={navClass}>
+            Appointments
+          </NavLink>
+          <NavLink to={`/${tenantSlug}/forms`} className={navClass}>
+            Forms
+          </NavLink>
+          <NavLink to={`/${tenantSlug}/billing`} className={navClass}>
+            Billing
+          </NavLink>
+          <NavLink to={`/${tenantSlug}/uploads`} className={navClass}>
+            Uploads
+          </NavLink>
+          <NavLink to={`/${tenantSlug}/settings`} className={navClass}>
+            Settings
+          </NavLink>
         </nav>
       </header>
       <main id="portal-content" className="portal-main">

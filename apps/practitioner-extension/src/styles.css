@@ -104,6 +104,12 @@ a:hover {
   text-decoration: none;
 }
 
+.ext-nav a.is-active {
+  color: #fff;
+  background: var(--link-dark);
+  border-color: var(--link-dark);
+}
+
 .ext-main {
   width: min(1180px, 100% - 1.5rem);
   margin: 1.08rem auto 1.55rem;
