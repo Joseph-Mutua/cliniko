@@ -77,8 +77,26 @@ function AppShell() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <h1>Cliniko Companion</h1>
-        <nav>
+        <div className="topbar-inner">
+          <div className="brand-block">
+            <p className="brand-kicker">Patient Companion Portal</p>
+            <h1>Cliniko Companion</h1>
+          </div>
+          {installPrompt ? (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={async () => {
+                await installPrompt.prompt();
+                await installPrompt.userChoice;
+                setInstallPrompt(null);
+              }}
+            >
+              Add to Home Screen
+            </Button>
+          ) : null}
+        </div>
+        <nav className="topnav">
           <Link to={`/${tenantSlug}/home`}>Home</Link>
           <Link to={`/${tenantSlug}/appointments`}>Appointments</Link>
           <Link to={`/${tenantSlug}/forms`}>Forms</Link>
@@ -86,23 +104,11 @@ function AppShell() {
           <Link to={`/${tenantSlug}/uploads`}>Uploads</Link>
           <Link to={`/${tenantSlug}/settings`}>Settings</Link>
         </nav>
-        {installPrompt ? (
-          <Button
-            type="button"
-            onClick={async () => {
-              await installPrompt.prompt();
-              await installPrompt.userChoice;
-              setInstallPrompt(null);
-            }}
-          >
-            Add to Home Screen
-          </Button>
-        ) : null}
       </header>
-      <main>
+      <main className="portal-main">
         <Outlet />
       </main>
-      <footer>
+      <footer className="portal-footer">
         <a href="#support">Support</a>
         <a href="#privacy">Privacy</a>
         <a href="#terms">Terms</a>
@@ -113,7 +119,7 @@ function AppShell() {
 
 function EntryPage() {
   return (
-    <Card title="Authorizing session" subtitle="Verifying magic link and preparing your portal.">
+    <Card title="Authorizing session" subtitle="Verifying magic link and preparing your portal." className="entry-card">
       <p>One moment while we finish sign-in.</p>
     </Card>
   );
@@ -131,50 +137,70 @@ function HomePage() {
   const outstanding = invoices.data?.filter((item) => item.outstandingCents > 0) ?? [];
 
   return (
-    <section className="grid two-up">
-      <Card title={`Welcome, ${summary.data?.patientName ?? "Patient"}`} subtitle="Portal summary">
-        <p>Outstanding invoices: {summary.data?.outstandingInvoiceCount ?? 0}</p>
-        <p>No-show alerts: {summary.data?.noShows ?? 0}</p>
-        <p>Upcoming recall: {summary.data?.upcomingRecall ? formatDate(summary.data.upcomingRecall) : "None"}</p>
+    <section className="grid two-up home-grid">
+      <Card
+        title={`Welcome, ${summary.data?.patientName ?? "Patient"}`}
+        subtitle="Everything you need before your next visit"
+        kicker="Portal summary"
+        className="hero-card"
+      >
+        <div className="metric-grid">
+          <article className="metric">
+            <small>Outstanding invoices</small>
+            <strong>{summary.data?.outstandingInvoiceCount ?? 0}</strong>
+          </article>
+          <article className="metric">
+            <small>No-show alerts</small>
+            <strong>{summary.data?.noShows ?? 0}</strong>
+          </article>
+          <article className="metric">
+            <small>Upcoming recall</small>
+            <strong>{summary.data?.upcomingRecall ? formatDate(summary.data.upcomingRecall) : "None"}</strong>
+          </article>
+        </div>
       </Card>
 
-      <Card title="Next appointment" subtitle="Join telehealth from this dashboard">
+      <Card title="Next appointment" subtitle="Join telehealth from this dashboard" kicker="Upcoming care">
         {nextAppointment ? (
-          <>
-            <p>{formatDate(nextAppointment.startsAt)}</p>
+          <div className="stack-block">
+            <p className="primary-line">{formatDate(nextAppointment.startsAt)}</p>
             <p>{nextAppointment.location}</p>
             <Link className="inline-link" to={`../appointments/${nextAppointment.id}`}>
               Join telehealth
             </Link>
-          </>
+          </div>
         ) : (
           <p>No upcoming appointments.</p>
         )}
       </Card>
 
-      <Card title="Pending forms" subtitle="Finish before your visit">
+      <Card title="Pending forms" subtitle="Finish before your visit" kicker="Intake readiness">
         {pendingForms.length > 0 ? (
-          pendingForms.map((form) => (
-            <p key={form.id}>
-              <Link className="inline-link" to={`../forms/${form.id}/fill`}>
-                {form.title}
-              </Link>
-            </p>
-          ))
+          <div className="stack-list">
+            {pendingForms.map((form) => (
+              <p key={form.id}>
+                <Link className="inline-link" to={`../forms/${form.id}/fill`}>
+                  {form.title}
+                </Link>
+              </p>
+            ))}
+          </div>
         ) : (
           <p>You are all caught up.</p>
         )}
       </Card>
 
-      <Card title="Billing" subtitle="Pay outstanding invoices">
+      <Card title="Billing" subtitle="Pay outstanding invoices" kicker="Payment center">
         {outstanding.length > 0 ? (
-          outstanding.map((invoice) => (
-            <p key={invoice.id}>
-              <Link className="inline-link" to={`../billing/${invoice.id}`}>
-                {invoice.id} - {formatMoney(invoice.outstandingCents)} due
-              </Link>
-            </p>
-          ))
+          <div className="stack-list">
+            {outstanding.map((invoice) => (
+              <p key={invoice.id}>
+                <Link className="inline-link" to={`../billing/${invoice.id}`}>
+                  {invoice.id} - {formatMoney(invoice.outstandingCents)} due
+                </Link>
+              </p>
+            ))}
+          </div>
         ) : (
           <p>No outstanding balances.</p>
         )}
@@ -196,7 +222,7 @@ function AppointmentsPage() {
   });
 
   return (
-    <Card title="Appointments" subtitle="Upcoming and past visits">
+    <Card title="Appointments" subtitle="Upcoming and past visits" kicker="Schedule">
       <div ref={setParentRef} className="virtual-container">
         <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: "relative" }}>
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -207,7 +233,7 @@ function AppointmentsPage() {
             return (
               <article key={appointment.id} className="list-row" style={{ transform: `translateY(${virtualRow.start}px)` }}>
                 <div>
-                  <p>{formatDate(appointment.startsAt)}</p>
+                  <p className="primary-line">{formatDate(appointment.startsAt)}</p>
                   <small>{appointment.location}</small>
                 </div>
                 <Link to={`../appointments/${appointment.id}`}>View</Link>
@@ -267,11 +293,11 @@ function FormsPage() {
   const { data } = useQuery(formsQuery(patientId));
 
   return (
-    <Card title="Forms" subtitle="Pending and completed">
+    <Card title="Forms" subtitle="Pending and completed" kicker="Documents">
       {data?.map((form) => (
         <article key={form.id} className="list-row static">
           <div>
-            <p>{form.title}</p>
+            <p className="primary-line">{form.title}</p>
             <small>{form.status}</small>
           </div>
           <Link to={`../forms/${form.id}/fill`}>Open</Link>
@@ -380,11 +406,11 @@ function BillingPage() {
   const pay = usePayInvoice(patientId);
 
   return (
-    <Card title="Billing" subtitle="Outstanding invoices and payment status">
+    <Card title="Billing" subtitle="Outstanding invoices and payment status" kicker="Invoices">
       {data?.map((invoice) => (
         <article key={invoice.id} className="list-row static">
           <div>
-            <p>{invoice.id}</p>
+            <p className="primary-line">{invoice.id}</p>
             <small>{formatMoney(invoice.outstandingCents)} outstanding</small>
           </div>
           <div className="actions-row">
