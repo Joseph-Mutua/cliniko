@@ -1,0 +1,158 @@
+:root {
+  --bg: #f7f6f1;
+  --surface: #ffffff;
+  --text: #1d1b16;
+  --muted: #6a6556;
+  --accent: #23454d;
+  --accent-soft: #dceff0;
+  --border: #d8d5c8;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    linear-gradient(160deg, #f0efe8 0%, transparent 38%),
+    radial-gradient(circle at 90% 0%, #d9ecef 0%, transparent 38%),
+    var(--bg);
+}
+
+.ext-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.ext-topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  background: rgb(255 255 255 / 0.76);
+  backdrop-filter: blur(9px);
+}
+
+.ext-topbar h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.ext-topbar nav {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.ext-main {
+  padding: 1rem;
+}
+
+.timeline-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 1rem;
+}
+
+.cc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 10px 26px rgb(32 49 53 / 0.08);
+}
+
+.cc-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  background: linear-gradient(135deg, #184049, #2f6672);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.virtual-container {
+  height: 440px;
+  overflow: auto;
+}
+
+.row {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 64px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem;
+  background: #fff;
+}
+
+.row p {
+  margin: 0 0 0.2rem;
+}
+
+.action-row {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.action-row input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.55rem;
+}
+
+.command-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(8 16 17 / 0.36);
+  display: grid;
+  place-items: start center;
+  padding-top: 12vh;
+}
+
+.command-panel {
+  width: min(540px, 90vw);
+  border: 1px solid #a9bec2;
+  border-radius: 12px;
+  background: #fcfdfd;
+  padding: 0.8rem;
+}
+
+.command-panel input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #c8d6d9;
+  border-radius: 8px;
+}
+
+.command-list {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.command-list button {
+  text-align: left;
+  border: 1px solid #cad8db;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.55rem;
+  cursor: pointer;
+}
+
+@media (max-width: 880px) {
+  .timeline-grid {
+    grid-template-columns: 1fr;
+  }
+}
