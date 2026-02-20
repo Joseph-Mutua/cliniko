@@ -1,6 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
@@ -10,8 +9,9 @@ export default defineConfig({
       "@cliniko-companion/utils": fileURLToPath(new URL("../../packages/utils/src/index.ts", import.meta.url)),
     },
   },
-  plugins: [react()],
-  server: {
-    port: 5174,
+  test: {
+    include: ["src/**/*.test.ts?(x)"],
+    exclude: ["tests/e2e/**"],
+    environment: "node",
   },
 });
