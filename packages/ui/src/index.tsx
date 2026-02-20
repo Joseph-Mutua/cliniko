@@ -41,3 +41,5 @@ export function Button(props: ButtonProps) {
   const { variant = "primary", size = "md", className, ...rest } = props;
   return <button {...rest} className={cx("cc-button", `cc-button--${variant}`, `cc-button--${size}`, className)} />;
 }
+
+export { ToastProvider, useToast } from "./toast";

@@ -139,3 +139,36 @@ textarea:focus-visible {
   padding: 0.7rem 1.06rem;
   font-size: 1rem;
 }
+
+.cc-toast-viewport {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  z-index: 120;
+  width: min(340px, calc(100% - 2rem));
+}
+
+.cc-toast {
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 10px;
+  background: #fff;
+  color: #2f4350;
+  font-weight: 700;
+  padding: 0.6rem 0.72rem;
+  box-shadow: 0 8px 18px rgb(32 68 79 / 0.15);
+}
+
+.cc-toast.tone-info {
+  border-left-color: #4a9bc1;
+}
+
+.cc-toast.tone-success {
+  border-left-color: #31a378;
+}
+
+.cc-toast.tone-error {
+  border-left-color: #c34b5f;
+}

@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { qk } from "@cliniko-companion/cache";
 import { readDraft, saveDraft } from "@cliniko-companion/forms";
-import { Button, Card } from "@cliniko-companion/ui";
+import { Button, Card, useToast } from "@cliniko-companion/ui";
 import { formatDate, formatMoney } from "@cliniko-companion/utils";
 import { confirmUpload, createUploadSession, exchangeSession, getSession, type DynamicField } from "./api";
 import {
@@ -265,6 +265,7 @@ function AppointmentsPage() {
 function AppointmentDetailPage() {
   const { patientId } = useLoaderData() as LoaderData;
   const { appointmentId = "" } = useParams();
+  const { pushToast } = useToast();
   const appointment = useQuery(appointmentQuery(appointmentId));
   const telehealth = useQuery(telehealthQuery(appointmentId));
   const upload = useUploadAttachment(patientId);
@@ -288,7 +289,12 @@ function AppointmentDetailPage() {
           variant="secondary"
           onClick={async () => {
             if (telehealth.data?.patientLink) {
-              await navigator.clipboard.writeText(telehealth.data.patientLink);
+              try {
+                await navigator.clipboard.writeText(telehealth.data.patientLink);
+                pushToast({ message: "Telehealth link copied", tone: "success" });
+              } catch {
+                pushToast({ message: "Unable to copy link", tone: "error" });
+              }
             }
           }}
         >
@@ -298,11 +304,28 @@ function AppointmentDetailPage() {
       <div className="upload-block">
         <label htmlFor="upload-name">Upload attachment</label>
         <input id="upload-name" value={fileName} onChange={(event) => setFileName(event.target.value)} />
-        <Button type="button" onClick={() => upload.mutate(fileName)} disabled={upload.isPending}>
+        <Button
+          type="button"
+          onClick={() =>
+            upload.mutate(fileName, {
+              onSuccess: () => pushToast({ message: "Attachment uploaded", tone: "success" }),
+              onError: () => pushToast({ message: "Upload failed", tone: "error" }),
+            })
+          }
+          disabled={upload.isPending}
+        >
           {upload.isPending ? "Uploading..." : "Upload"}
         </Button>
       </div>
-      <Button type="button" onClick={() => reschedule.mutate(appointmentId)}>
+      <Button
+        type="button"
+        onClick={() =>
+          reschedule.mutate(appointmentId, {
+            onSuccess: () => pushToast({ message: "Reschedule request sent", tone: "success" }),
+            onError: () => pushToast({ message: "Reschedule request failed", tone: "error" }),
+          })
+        }
+      >
         Request reschedule
       </Button>
     </Card>
@@ -356,6 +379,7 @@ function schemaFromFields(fields: DynamicField[]) {
 function FormFillPage() {
   const { patientId } = useLoaderData() as LoaderData;
   const { formId = "" } = useParams();
+  const { pushToast } = useToast();
   const formDefinition = useQuery(formDefinitionQuery(formId));
   const submit = useSubmitForm(patientId, formId);
 
@@ -385,7 +409,15 @@ function FormFillPage() {
 
   return (
     <Card title={formDefinition.data.title} subtitle="Autosave enabled" kicker="Digital form">
-      <form onSubmit={form.handleSubmit((values) => submit.mutate(values))} className="dynamic-form">
+      <form
+        onSubmit={form.handleSubmit((values) =>
+          submit.mutate(values, {
+            onSuccess: () => pushToast({ message: "Form submitted", tone: "success" }),
+            onError: () => pushToast({ message: "Form submission failed", tone: "error" }),
+          }),
+        )}
+        className="dynamic-form"
+      >
         {formDefinition.data.fields.map((field) => {
           if (field.type === "textarea") {
             return (
@@ -423,6 +455,7 @@ function FormFillPage() {
 
 function BillingPage() {
   const { patientId } = useLoaderData() as LoaderData;
+  const { pushToast } = useToast();
   const { data } = useQuery(invoicesQuery(patientId));
   const pay = usePayInvoice(patientId);
 
@@ -442,7 +475,15 @@ function BillingPage() {
           <div className="actions-row">
             <Link to={`../billing/${invoice.id}`}>Details</Link>
             {invoice.outstandingCents > 0 ? (
-              <Button type="button" onClick={() => pay.mutate(invoice.id)}>
+              <Button
+                type="button"
+                onClick={() =>
+                  pay.mutate(invoice.id, {
+                    onSuccess: () => pushToast({ message: `Payment recorded for ${invoice.id}`, tone: "success" }),
+                    onError: () => pushToast({ message: `Payment failed for ${invoice.id}`, tone: "error" }),
+                  })
+                }
+              >
                 Pay now
               </Button>
             ) : (
@@ -483,6 +524,7 @@ function InvoiceDetailPage() {
 
 function UploadsPage() {
   const { patientId } = useLoaderData() as LoaderData;
+  const { pushToast } = useToast();
   const { data } = useQuery(attachmentsQuery(patientId));
   const [name, setName] = useState("insurance-card.jpg");
   const upload = useUploadAttachment(patientId);
@@ -491,7 +533,15 @@ function UploadsPage() {
     <Card title="Uploads" subtitle="Insurance docs, referrals, and progress images" kicker="Attachments">
       <div className="actions-row">
         <input value={name} onChange={(event) => setName(event.target.value)} />
-        <Button type="button" onClick={() => upload.mutate(name)}>
+        <Button
+          type="button"
+          onClick={() =>
+            upload.mutate(name, {
+              onSuccess: () => pushToast({ message: "Document uploaded", tone: "success" }),
+              onError: () => pushToast({ message: "Document upload failed", tone: "error" }),
+            })
+          }
+        >
           Upload file
         </Button>
       </div>

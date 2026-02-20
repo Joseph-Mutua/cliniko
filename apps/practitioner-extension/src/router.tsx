@@ -3,7 +3,7 @@ import { useQuery, type QueryClient } from "@tanstack/react-query";
 import { Link, NavLink, Outlet, redirect, useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { createBrowserRouter, type LoaderFunctionArgs } from "react-router-dom";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Button, Card } from "@cliniko-companion/ui";
+import { Button, Card, useToast } from "@cliniko-companion/ui";
 import { formatDate, formatMoney } from "@cliniko-companion/utils";
 import { parseEntryParams } from "./api";
 import {
@@ -142,6 +142,7 @@ function ExtensionLayout() {
 
 function TimelinePage() {
   const { patientId } = useLoaderData() as PatientRouteContext;
+  const { pushToast } = useToast();
   const summary = useQuery(patientSummaryQuery(patientId));
   const timeline = useQuery(timelineQuery(patientId, { pageSize: 30 }));
   const addNote = useAddNoteStub(patientId);
@@ -201,7 +202,12 @@ function TimelinePage() {
             type="button"
             onClick={async () => {
               if (summary.data?.nextTelehealthPatientLink) {
-                await navigator.clipboard.writeText(summary.data.nextTelehealthPatientLink);
+                try {
+                  await navigator.clipboard.writeText(summary.data.nextTelehealthPatientLink);
+                  pushToast({ message: "Telehealth link copied", tone: "success" });
+                } catch {
+                  pushToast({ message: "Unable to copy telehealth link", tone: "error" });
+                }
               }
             }}
           >
@@ -210,7 +216,17 @@ function TimelinePage() {
         </div>
         <div className="action-row">
           <input value={noteText} onChange={(event) => setNoteText(event.target.value)} aria-label="Note stub" />
-          <Button type="button" variant="ghost" onClick={() => addNote.mutate(noteText)} disabled={addNote.isPending}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() =>
+              addNote.mutate(noteText, {
+                onSuccess: () => pushToast({ message: "Note stub added", tone: "success" }),
+                onError: () => pushToast({ message: "Unable to add note", tone: "error" }),
+              })
+            }
+            disabled={addNote.isPending}
+          >
             Add note stub
           </Button>
         </div>
@@ -226,6 +242,7 @@ function TimelinePage() {
 
 function SendIntakePage() {
   const { patientId } = useLoaderData() as PatientRouteContext;
+  const { pushToast } = useToast();
   const templates = useQuery(formTemplatesQuery());
   const mutation = useSendIntake(patientId);
 
@@ -234,7 +251,15 @@ function SendIntakePage() {
       {templates.data?.map((template) => (
         <div key={template.id} className="action-row">
           <span className="action-title">{template.title}</span>
-          <Button type="button" onClick={() => mutation.mutate(template.id)}>
+          <Button
+            type="button"
+            onClick={() =>
+              mutation.mutate(template.id, {
+                onSuccess: () => pushToast({ message: "Intake sent", tone: "success" }),
+                onError: () => pushToast({ message: "Failed to send intake", tone: "error" }),
+              })
+            }
+          >
             Send
           </Button>
         </div>
@@ -245,6 +270,7 @@ function SendIntakePage() {
 
 function RequestPaymentPage() {
   const { patientId } = useLoaderData() as PatientRouteContext;
+  const { pushToast } = useToast();
   const invoices = useQuery(outstandingInvoicesQuery(patientId));
   const mutation = useSendPaymentLink(patientId);
 
@@ -255,7 +281,15 @@ function RequestPaymentPage() {
           <span className="action-title">
             {invoice.id} ({formatMoney(invoice.outstandingCents)})
           </span>
-          <Button type="button" onClick={() => mutation.mutate(invoice.id)}>
+          <Button
+            type="button"
+            onClick={() =>
+              mutation.mutate(invoice.id, {
+                onSuccess: () => pushToast({ message: "Payment request sent", tone: "success" }),
+                onError: () => pushToast({ message: "Payment request failed", tone: "error" }),
+              })
+            }
+          >
             Send link
           </Button>
         </div>
@@ -266,6 +300,7 @@ function RequestPaymentPage() {
 
 function UploadAttachmentPage() {
   const { patientId } = useLoaderData() as PatientRouteContext;
+  const { pushToast } = useToast();
   const mutation = useUploadAttachment(patientId);
   const [name, setName] = useState("progress-photo.jpg");
 
@@ -273,7 +308,15 @@ function UploadAttachmentPage() {
     <Card title="Upload attachment" subtitle="Presigned upload workflow" kicker="Clinical documents">
       <div className="action-row">
         <input value={name} onChange={(event) => setName(event.target.value)} />
-        <Button type="button" onClick={() => mutation.mutate(name)}>
+        <Button
+          type="button"
+          onClick={() =>
+            mutation.mutate(name, {
+              onSuccess: () => pushToast({ message: "Attachment uploaded", tone: "success" }),
+              onError: () => pushToast({ message: "Attachment upload failed", tone: "error" }),
+            })
+          }
+        >
           Upload
         </Button>
       </div>
