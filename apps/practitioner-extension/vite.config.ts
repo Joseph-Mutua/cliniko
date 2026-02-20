@@ -4,11 +4,24 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@cliniko-companion/cache": fileURLToPath(new URL("../../packages/cache/src/index.ts", import.meta.url)),
-      "@cliniko-companion/ui": fileURLToPath(new URL("../../packages/ui/src/index.tsx", import.meta.url)),
-      "@cliniko-companion/utils": fileURLToPath(new URL("../../packages/utils/src/index.ts", import.meta.url)),
-    },
+    alias: [
+      {
+        find: "@cliniko-companion/cache",
+        replacement: fileURLToPath(new URL("../../packages/cache/src/index.ts", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/ui/theme.css",
+        replacement: fileURLToPath(new URL("../../packages/ui/theme.css", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/ui",
+        replacement: fileURLToPath(new URL("../../packages/ui/src/index.tsx", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/utils",
+        replacement: fileURLToPath(new URL("../../packages/utils/src/index.ts", import.meta.url)),
+      },
+    ],
   },
   plugins: [react()],
   server: {

@@ -8,6 +8,7 @@
       "@cliniko-companion/cache": ["../../packages/cache/src/index.ts"],
       "@cliniko-companion/forms": ["../../packages/forms/src/index.ts"],
       "@cliniko-companion/ui": ["../../packages/ui/src/index.tsx"],
+      "@cliniko-companion/ui/theme.css": ["../../packages/ui/theme.css"],
       "@cliniko-companion/utils": ["../../packages/utils/src/index.ts"]
     }
   },

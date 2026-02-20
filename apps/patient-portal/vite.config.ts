@@ -5,12 +5,28 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@cliniko-companion/cache": fileURLToPath(new URL("../../packages/cache/src/index.ts", import.meta.url)),
-      "@cliniko-companion/forms": fileURLToPath(new URL("../../packages/forms/src/index.ts", import.meta.url)),
-      "@cliniko-companion/ui": fileURLToPath(new URL("../../packages/ui/src/index.tsx", import.meta.url)),
-      "@cliniko-companion/utils": fileURLToPath(new URL("../../packages/utils/src/index.ts", import.meta.url)),
-    },
+    alias: [
+      {
+        find: "@cliniko-companion/cache",
+        replacement: fileURLToPath(new URL("../../packages/cache/src/index.ts", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/forms",
+        replacement: fileURLToPath(new URL("../../packages/forms/src/index.ts", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/ui/theme.css",
+        replacement: fileURLToPath(new URL("../../packages/ui/theme.css", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/ui",
+        replacement: fileURLToPath(new URL("../../packages/ui/src/index.tsx", import.meta.url)),
+      },
+      {
+        find: "@cliniko-companion/utils",
+        replacement: fileURLToPath(new URL("../../packages/utils/src/index.ts", import.meta.url)),
+      },
+    ],
   },
   plugins: [
     react(),
