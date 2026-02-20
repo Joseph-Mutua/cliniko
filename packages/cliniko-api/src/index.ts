@@ -25,6 +25,25 @@ export type TimelineEvent = ClinikoEntity & {
   occurredAt: string;
 };
 
+export type OpenApiSpecLike = {
+  openapi?: string;
+  paths: Record<string, unknown>;
+};
+
+export const requiredClinikoPaths = [
+  "/patients/{id}",
+  "/patients/{id}/appointments",
+  "/appointments/{id}",
+  "/appointments/{id}/telehealth_links",
+  "/invoices",
+  "/invoices/{id}",
+  "/patient_attachments",
+] as const;
+
+export function getMissingRequiredPaths(spec: OpenApiSpecLike): string[] {
+  return requiredClinikoPaths.filter((path) => !(path in spec.paths));
+}
+
 export class ClinikoApiClient {
   constructor(private readonly baseUrl: string, private readonly fetchImpl: typeof fetch = fetch) {}
 

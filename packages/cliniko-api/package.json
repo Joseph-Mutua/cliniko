@@ -9,6 +9,10 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo lint cliniko-api",
-    "generate": "echo \"Use openapi-typescript against Cliniko spec here\""
+    "generate": "echo \"Use openapi-typescript against Cliniko spec here\"",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8"
   }
 }
