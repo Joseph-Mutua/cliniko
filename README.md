@@ -19,7 +19,7 @@ Cliniko Companion is a lightweight, first-party-quality extension concept that i
 
 **What this adds in real clinics:** Fewer admin touches (patients self-complete intake, upload docs, pay invoices in one place). Higher follow-through via a single “Next steps” portal. Faster clinician workflow via an embedded patient timeline from Cliniko. More consistent support outcomes with fewer “where is the form / link / invoice?” tickets.
 
-## What You Get (Features)
+## Features
 
 **Patient Portal (PWA)** — Magic-link entry (no account creation). Dashboard: upcoming appointment, pending forms, outstanding invoices, join telehealth. Dynamic intake forms: multi-step, schema validation, autosave drafts (survive refresh/tab close). Attachment uploads (docs/photos) with progress and confirmation. Billing: invoices list, invoice detail, “pay now” (demo can mock payment provider).
 
@@ -129,11 +129,11 @@ See `packages/cache/src/keys.ts` and `packages/cache/src/invalidation.ts`.
 
 Aligned with Cliniko’s priorities: Cliniko API keys never enter browser code (BFF only). Magic links are short-lived; sessions are scoped and revocable. Input validation is enforced at BFF boundaries. Recommended hardening: CSP (Content Security Policy), rate limiting, audit logs for mutations. See `docs/threat-model.md`.
 
-## Demo
+## How It Works
 
-**Recommended demo story (~6 minutes):** Patient receives portal link → opens dashboard. Patient completes intake form (autosave shown) → submits. Patient uploads referral letter/photo. Patient joins telehealth from portal. Patient pays invoice (or sees status update). Staff opens patient timeline from Cliniko → sees everything and triggers quick actions.
+Patient receives portal link → opens dashboard. Patient completes intake form (autosave shown) → submits. Patient uploads referral letter/photo. Patient joins telehealth from portal. Patient pays invoice (or sees status update). Staff opens patient timeline from Cliniko → sees everything and triggers quick actions.
 
-**Demo data:** The repo includes simple seeding so you can demonstrate one telehealth appointment, one pending intake form, one outstanding invoice, and one upload-ready attachment workflow.
+**Demo data:** The repo includes simple seeding to demonstrate one telehealth appointment, one pending intake form, one outstanding invoice, and one upload-ready attachment workflow.
 
 ## Testing
 
