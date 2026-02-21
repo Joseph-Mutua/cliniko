@@ -383,7 +383,7 @@ async function patientLoader(queryClient: QueryClient, args: LoaderFunctionArgs)
   return { patientId };
 }
 
-export function createExtensionRouter(queryClient: QueryClient) {
+export function createExtensionRouter(queryClient: QueryClient): ReturnType<typeof createBrowserRouter> {
   return createBrowserRouter([
     {
       path: "/",

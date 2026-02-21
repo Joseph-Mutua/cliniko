@@ -581,7 +581,7 @@ function SettingsPage() {
   );
 }
 
-export function createPortalRouter(queryClient: QueryClient) {
+export function createPortalRouter(queryClient: QueryClient): ReturnType<typeof createBrowserRouter> {
   return createBrowserRouter([
     {
       path: "/",
