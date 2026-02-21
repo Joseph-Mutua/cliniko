@@ -375,6 +375,7 @@ app.get("/audit/events", (_req, res) => {
   res.json({ items: auditLog.slice(-100) });
 });
 
-app.listen(PORT, () => {
-  logInfo("bff.started", { port: PORT, clinikoApiConfigured: Boolean(CLINIKO_API_KEY) });
+const HOST = process.env.HOST ?? "0.0.0.0";
+app.listen(PORT, HOST, () => {
+  logInfo("bff.started", { port: PORT, host: HOST, clinikoApiConfigured: Boolean(CLINIKO_API_KEY) });
 });
