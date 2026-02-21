@@ -29,11 +29,11 @@ export function ToastProvider(props: PropsWithChildren<{}>) {
       message: input.message,
       tone: input.tone ?? "info",
     };
-    setToasts((current) => [...current, toast]);
+    setToasts((current: Toast[]) => [...current, toast]);
 
     const duration = input.durationMs ?? 2800;
     setTimeout(() => {
-      setToasts((current) => current.filter((item) => item.id !== toast.id));
+      setToasts((current: Toast[]) => current.filter((item: Toast) => item.id !== toast.id));
     }, duration);
   }, []);
 
@@ -43,7 +43,7 @@ export function ToastProvider(props: PropsWithChildren<{}>) {
     <ToastContext.Provider value={value}>
       {props.children}
       <div className="cc-toast-viewport" aria-live="polite" aria-atomic="false">
-        {toasts.map((toast) => (
+        {toasts.map((toast: Toast) => (
           <div key={toast.id} className={`cc-toast tone-${toast.tone}`}>
             {toast.message}
           </div>

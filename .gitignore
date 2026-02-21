@@ -9,3 +9,6 @@ playwright-report/
 !.env.example
 .pnpm-store/
 .turbo/
+
+# Local-only deployment guide (not committed)
+docs/deploy-vercel.md
