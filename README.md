@@ -1,5 +1,7 @@
 # Cliniko Companion — Patient Portal + Practitioner Timeline Extension
 
+**Live demo:** [Patient Portal](https://cliniko-patient-portal-cge6.vercel.app/demo/home) · [Practitioner Timeline](https://cliniko-practitioner-extension.vercel.app/patients/pat_123/timeline)
+
 Cliniko Companion is a lightweight, first-party-quality extension concept that improves Cliniko by reducing admin follow-ups and increasing patient completion (forms, uploads, telehealth attendance, payments).
 
 - `apps/patient-portal`: loginless magic-link patient PWA.
