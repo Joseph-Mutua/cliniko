@@ -198,7 +198,11 @@ importers:
         specifier: ^5.64.2
         version: 5.90.20
 
-  packages/cliniko-api: {}
+  packages/cliniko-api:
+    devDependencies:
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.11)(terser@5.46.0)
 
   packages/config: {}
 

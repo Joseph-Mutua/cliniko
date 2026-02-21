@@ -17,6 +17,7 @@ export const qk = {
   invoicesSummary: (patientId: string) => ["patient", patientId, "invoices", "summary"] as const,
 
   forms: (patientId: string) => ["patient", patientId, "forms"] as const,
+  formTemplates: () => ["forms", "templates"] as const,
   formDefinition: (formId: string) => ["form", formId, "definition"] as const,
   formDraft: (patientId: string, formId: string) => ["patient", patientId, "form", formId, "draft"] as const,
 

@@ -25,7 +25,7 @@ export const timelineQuery = (patientId: string, params: Record<string, unknown>
 
 export const formTemplatesQuery = () =>
   queryOptions({
-    queryKey: ["forms", "templates"],
+    queryKey: qk.formTemplates(),
     queryFn: () => getFormTemplates(),
     staleTime: staleTimes.formDefinition,
   });
